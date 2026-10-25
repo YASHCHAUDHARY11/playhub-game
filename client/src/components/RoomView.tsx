@@ -6,15 +6,17 @@ import { ConnectFour } from './games/ConnectFour';
 import { TriviaBlitz } from './games/TriviaBlitz';
 import { ChatDrawer } from './ChatDrawer';
 import { GameType } from '../types';
-import { Copy, Play, Crown } from 'lucide-react';
+import { Copy, Play, Crown, Loader2 } from 'lucide-react';
 
 export const RoomView: React.FC<{ roomId?: string }> = ({ roomId }) => {
   const { room, socket, sendAction } = useGameRoom(roomId);
 
   if (!room) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+      <div className="flex flex-col h-screen items-center justify-center bg-slate-950 text-white gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+        <p className="text-slate-400 text-sm font-medium animate-pulse">Connecting to game server...</p>
+        <span className="text-xs text-slate-600">Free server might take 10-20s to wake up</span>
       </div>
     );
   }
@@ -26,10 +28,10 @@ export const RoomView: React.FC<{ roomId?: string }> = ({ roomId }) => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden">
-      <div className="flex-1 flex flex-col">
+    <div className="flex flex-col md:flex-row h-screen bg-slate-950 text-slate-100 overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Navigation Bar */}
-        <header className="h-16 border-b border-slate-800 px-6 flex items-center justify-between">
+        <header className="h-16 border-b border-slate-800 px-4 md:px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-black bg-gradient-to-r from-indigo-400 to-pink-500 bg-clip-text text-transparent">
               PLAYHUB
@@ -44,7 +46,7 @@ export const RoomView: React.FC<{ roomId?: string }> = ({ roomId }) => {
 
           {/* Players List */}
           <div className="flex items-center gap-2">
-            {Object.values(room.players).map((p) => (
+            {Object.values(room.players || {}).map((p) => (
               <div
                 key={p.id}
                 title={`${p.name} (${p.score} pts)`}
@@ -59,9 +61,9 @@ export const RoomView: React.FC<{ roomId?: string }> = ({ roomId }) => {
         </header>
 
         {/* Game Main Area */}
-        <main className="flex-1 overflow-auto p-6 flex flex-col items-center justify-center">
+        <main className="flex-1 overflow-auto p-4 md:p-6 flex flex-col items-center justify-center">
           {room.status === 'LOBBY' ? (
-            <div className="max-w-xl w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl text-center">
+            <div className="max-w-xl w-full bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl shadow-2xl text-center">
               <h2 className="text-2xl font-bold mb-4">Game Lobby</h2>
               {isHost ? (
                 <div>
