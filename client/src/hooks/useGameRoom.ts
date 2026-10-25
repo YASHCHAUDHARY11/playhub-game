@@ -30,7 +30,7 @@ export function useGameRoom(roomIdFromUrl?: string) {
 
     localStorage.setItem('ph_profile', JSON.stringify(profile));
 
-    const socket = io(SERVER_URL, { transports: ['websocket'] });
+    const socket = io(SERVER_URL, { transports: ['websocket', 'polling'] });
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -47,7 +47,11 @@ export function useGameRoom(roomIdFromUrl?: string) {
   }, [roomIdFromUrl]);
 
   const sendAction = (actionType: string, payload?: any) => {
-    socketRef.current?.emit(actionType, payload);
+    if (payload !== undefined) {
+      socketRef.current?.emit(actionType, payload);
+    } else {
+      socketRef.current?.emit(actionType);
+    }
   };
 
   return { socket: socketRef.current, room, sendAction };
